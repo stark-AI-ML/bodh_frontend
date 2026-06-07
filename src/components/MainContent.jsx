@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const AuthExampleCard = () => {
   const [tab, setTab] = useState("js");
@@ -33,7 +33,7 @@ const AuthExampleCard = () => {
       </div>
       <SyntaxHighlighter 
         language={tab === 'js' ? 'javascript' : tab === 'python' ? 'python' : 'bash'} 
-        style={vscDarkPlus} 
+        style={dracula} 
         customStyle={{ margin: 0, borderRadius: '8px', fontSize: '0.9rem', padding: '16px' }}
       >
         {tab === 'js' ? `fetch("http://localhost:5000/api/general/v1/today", {
