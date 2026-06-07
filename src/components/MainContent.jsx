@@ -1,4 +1,63 @@
-import React from "react";
+import React, { useState } from "react";
+
+const AuthExampleCard = () => {
+  const [tab, setTab] = useState("js");
+
+  const tabStyle = (current) => ({
+    padding: '6px 14px', 
+    fontSize: '0.85rem', 
+    borderRadius: '6px', 
+    cursor: 'pointer', 
+    border: 'none',
+    fontWeight: '500',
+    background: tab === current ? 'var(--accent)' : 'var(--surface2)', 
+    color: tab === current ? 'white' : 'var(--text2)',
+    transition: 'all 0.2s ease'
+  });
+
+  return (
+    <div className="endpoint-card" id="auth-example">
+      <div className="endpoint-header">
+        <span className="method" style={{ background: 'var(--purple)', boxShadow: '0 2px 8px rgba(139, 92, 246, 0.4)' }}>AUTH</span>
+        <span className="path">Authentication Example</span>
+      </div>
+      <p>
+        To access the BodhAPI, you must include your API Key in the <code>Authorization</code> header using the Bearer token scheme. Here's a quick example making a <code>GET</code> request:
+      </p>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        <button style={tabStyle('js')} onClick={() => setTab('js')}>JavaScript</button>
+        <button style={tabStyle('python')} onClick={() => setTab('python')}>Python</button>
+        <button style={tabStyle('curl')} onClick={() => setTab('curl')}>cURL</button>
+      </div>
+      <pre style={{ marginTop: 0 }}>
+        <code>
+{tab === 'js' && `fetch("http://localhost:5000/api/general/v1/today", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));`}
+{tab === 'python' && `import requests
+
+url = "http://localhost:5000/api/general/v1/today"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())`}
+{tab === 'curl' && `curl -X GET "http://localhost:5000/api/general/v1/today" \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`}
+        </code>
+      </pre>
+    </div>
+  );
+};
 
 const EndpointCard = ({ id, method, path, description, params, example }) => (
   <div className="endpoint-card" id={id}>
@@ -40,6 +99,8 @@ const MainContent = () => {
     <main className="main" id="mainContent">
       <h1>📡 BodhAPI Documentation</h1>
       <p>High-performance REST API for Indian news intelligence. Base URL: <code>http://localhost:5000/api</code></p>
+
+      <AuthExampleCard />
 
       <h2>General News</h2>
       <p>All general news endpoints cover every category unless filtered.</p>
