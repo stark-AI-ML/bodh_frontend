@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const AuthExampleCard = () => {
   const [tab, setTab] = useState("js");
@@ -29,9 +31,12 @@ const AuthExampleCard = () => {
         <button style={tabStyle('python')} onClick={() => setTab('python')}>Python</button>
         <button style={tabStyle('curl')} onClick={() => setTab('curl')}>cURL</button>
       </div>
-      <pre style={{ marginTop: 0 }}>
-        <code>
-{tab === 'js' && `fetch("http://localhost:5000/api/general/v1/today", {
+      <SyntaxHighlighter 
+        language={tab === 'js' ? 'javascript' : tab === 'python' ? 'python' : 'bash'} 
+        style={vscDarkPlus} 
+        customStyle={{ margin: 0, borderRadius: '8px', fontSize: '0.9rem', padding: '16px' }}
+      >
+        {tab === 'js' ? `fetch("http://localhost:5000/api/general/v1/today", {
   method: "GET",
   headers: {
     "Authorization": "Bearer YOUR_API_KEY",
@@ -39,8 +44,8 @@ const AuthExampleCard = () => {
   }
 })
 .then(response => response.json())
-.then(data => console.log(data));`}
-{tab === 'python' && `import requests
+.then(data => console.log(data));` : 
+tab === 'python' ? `import requests
 
 url = "http://localhost:5000/api/general/v1/today"
 headers = {
@@ -49,12 +54,11 @@ headers = {
 }
 
 response = requests.get(url, headers=headers)
-print(response.json())`}
-{tab === 'curl' && `curl -X GET "http://localhost:5000/api/general/v1/today" \\
+print(response.json())` : 
+`curl -X GET "http://localhost:5000/api/general/v1/today" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json"`}
-        </code>
-      </pre>
+      </SyntaxHighlighter>
     </div>
   );
 };
