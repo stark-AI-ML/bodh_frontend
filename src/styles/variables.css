@@ -1,0 +1,128 @@
+/* ═══════════════════════════════════════════
+   Design Tokens — BodhAPI Docs
+   ═══════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;600;700&display=swap');
+
+:root {
+  /* ── Surface Colors ─────────── */
+  --bg:           #09090b;
+  --surface:      #111113;
+  --surface-2:    #18181b;
+  --surface-3:    #1f1f23;
+  --surface-inset:#0a0a0c;
+
+  /* ── Border ─────────────────── */
+  --border:       rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.13);
+  --border-strong:#3f3f46;
+
+  /* ── Text ───────────────────── */
+  --text:   #fafafa;
+  --text-2: #a1a1aa;
+  --text-3: #71717a;
+  --text-4: #52525b;
+
+  /* ── Accent ─────────────────── */
+  --accent:       #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-muted: rgba(99, 102, 241, 0.10);
+  --accent-glow:  rgba(99, 102, 241, 0.18);
+
+  /* ── Semantic ───────────────── */
+  --success:      #22c55e;
+  --success-muted:rgba(34, 197, 94, 0.12);
+  --warning:      #eab308;
+  --error:        #ef4444;
+  --error-muted:  rgba(239, 68, 68, 0.10);
+  --purple:       #a78bfa;
+  --purple-muted: rgba(167, 139, 250, 0.12);
+
+  /* ── Method Colors ──────────── */
+  --get:    #22c55e;
+  --post:   #3b82f6;
+  --put:    #eab308;
+  --delete: #ef4444;
+
+  /* ── Radius ─────────────────── */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius:    8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl:20px;
+  --radius-full:9999px;
+
+  /* ── Shadows ────────────────── */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.15);
+  --shadow:    0 4px 16px rgba(0,0,0,0.2);
+  --shadow-md: 0 8px 30px rgba(0,0,0,0.25);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.35);
+
+  /* ── Typography ─────────────── */
+  --font:      'Inter', system-ui, -apple-system, sans-serif;
+  --font-display:'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --text-xs:  0.75rem;
+  --text-sm:  0.8125rem;
+  --text-base:0.875rem;
+  --text-md:  0.9375rem;
+  --text-lg:  1rem;
+  --text-xl:  1.125rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+
+  /* ── Layout ─────────────────── */
+  --header-h:  56px;
+  --sidebar-w: 250px;
+  --content-max: 820px;
+  --console-w: 420px;
+
+  /* ── JSON Syntax ────────────── */
+  --json-key:   #f472b6;
+  --json-string:#34d399;
+  --json-number:#fbbf24;
+  --json-bool:  #a78bfa;
+  --json-null:  #a78bfa;
+  --json-punct: #52525b;
+}
+
+/* ── Light Theme Override ───── */
+[data-theme="light"] {
+  --bg:           #ffffff;
+  --surface:      #fafafa;
+  --surface-2:    #f4f4f5;
+  --surface-3:    #e4e4e7;
+  --surface-inset:#f0f0f2;
+
+  --border:       rgba(0, 0, 0, 0.06);
+  --border-hover: rgba(0, 0, 0, 0.12);
+  --border-strong:#d4d4d8;
+
+  --text:   #09090b;
+  --text-2: #3f3f46;
+  --text-3: #71717a;
+  --text-4: #a1a1aa;
+
+  --accent:       #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-muted: rgba(79, 70, 229, 0.07);
+  --accent-glow:  rgba(79, 70, 229, 0.10);
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow:    0 4px 16px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.12);
+
+  --json-key:   #d946ef;
+  --json-string:#059669;
+  --json-number:#d97706;
+  --json-bool:  #7c3aed;
+  --json-null:  #7c3aed;
+  --json-punct: #a1a1aa;
+}

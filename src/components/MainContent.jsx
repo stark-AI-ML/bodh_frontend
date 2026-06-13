@@ -20,18 +20,19 @@ const AuthExampleCard = () => {
   return (
     <div className="endpoint-card" id="auth-example">
       <div className="endpoint-header">
-        <span className="method" style={{ background: 'var(--purple)', boxShadow: '0 2px 8px rgba(139, 92, 246, 0.4)' }}>AUTH</span>
-        <span className="path">Authentication Example</span>
+        <span className="method" style={{ background: 'var(--purple)', boxShadow: '0 2px 8px rgba(139, 92, 246, 0.4)' }}>API</span>
+        <span className="path">Request Example</span>
       </div>
-      <p>
-        To access the BodhAPI, you must include your API Key in the <code>Authorization</code> header using the Bearer token scheme. Here's a quick example making a <code>GET</code> request:
-      </p>
+
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
         <button style={tabStyle('js')} onClick={() => setTab('js')}>JavaScript</button>
         <button style={tabStyle('python')} onClick={() => setTab('python')}>Python</button>
         <button style={tabStyle('curl')} onClick={() => setTab('curl')}>cURL</button>
       </div>
-      <SyntaxHighlighter 
+      
+
+      <div className="syntax-block" >
+              <SyntaxHighlighter 
         language={tab === 'js' ? 'javascript' : tab === 'python' ? 'python' : 'bash'} 
         style={dracula} 
         customStyle={{ margin: 0, borderRadius: '8px', fontSize: '0.9rem', padding: '16px' }}
@@ -58,7 +59,14 @@ print(response.json())` :
 `curl -X GET "http://localhost:5000/api/general/v1/today" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json"`}
-      </SyntaxHighlighter>
+</SyntaxHighlighter>
+      </div>
+
+<br/>
+
+       <p>
+        To access the BodhAPI, you must include your API Key in the <code>Authorization</code> header using the Bearer token scheme. Here's a quick example making a <code>GET</code> request:
+      </p>
     </div>
   );
 };

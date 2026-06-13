@@ -1,0 +1,440 @@
+/* ═══════════════════════════════════════════
+   Account Modal
+   ═══════════════════════════════════════════ */
+
+/* ── Backdrop ──────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.modal-backdrop.closing {
+  animation: fadeOut 0.15s ease forwards;
+}
+
+/* ── Modal ─────────────────── */
+.account-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+/* ── Header ────────────────── */
+.account-modal-header {
+  padding: 20px 20px 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-close-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-4);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modal-close-btn:hover {
+  background: var(--surface-3);
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+
+/* ── Profile ───────────────── */
+.account-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.account-avatar-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 14px;
+}
+
+.account-avatar-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    var(--accent) 0%, #a78bfa 25%,
+    #ec4899 50%, #f59e0b 75%, var(--accent) 100%
+  );
+  animation: ringRotate 5s linear infinite;
+  z-index: 0;
+}
+
+.account-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+  border: 3px solid var(--surface);
+}
+
+.account-name {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+  letter-spacing: -0.3px;
+}
+
+.account-email {
+  font-size: var(--text-sm);
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.account-email-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── API Key Section ───────── */
+.account-key-section {
+  padding: 20px 24px;
+}
+
+.key-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.key-section-title {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-4);
+}
+
+.key-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  background: var(--success-muted);
+  color: var(--success);
+  border: 1px solid rgba(34, 197, 94, 0.15);
+}
+
+.key-status-badge .status-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--success);
+  border-radius: 50%;
+}
+
+.key-display-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.key-text {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.key-copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-4);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.key-copy-btn:hover {
+  background: var(--surface-3);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.key-copy-btn.copied {
+  background: var(--success-muted);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.key-copy-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Key Actions ───────────── */
+.key-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.key-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+}
+
+.key-action-btn.primary {
+  background: var(--accent);
+  color: white;
+}
+.key-action-btn.primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.key-action-btn.secondary {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+.key-action-btn.secondary:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+/* ── No Key State ──────────── */
+.no-key-state {
+  padding: 20px 24px 28px;
+  text-align: center;
+}
+
+.no-key-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  background: var(--accent-muted);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  animation: gentleBounce 3s ease-in-out infinite;
+}
+
+.no-key-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.no-key-desc {
+  font-size: var(--text-sm);
+  color: var(--text-3);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.generate-key-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.generate-key-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.generate-key-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.35);
+}
+.generate-key-btn:hover::after { transform: translateX(100%); }
+.generate-key-btn:active { transform: translateY(0); }
+.generate-key-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ── Footer ────────────────── */
+.account-modal-footer {
+  padding: 14px 24px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.signout-btn {
+  background: none;
+  border: none;
+  color: var(--text-4);
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.signout-btn:hover {
+  color: var(--error);
+  background: var(--error-muted);
+}
+
+.quickstart-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+.quickstart-link:hover {
+  background: var(--accent-muted);
+}
+
+/* ── Confirm Overlay ───────── */
+.confirm-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+  border-radius: var(--radius-xl);
+  animation: fadeIn 0.15s ease forwards;
+  padding: 32px;
+}
+
+[data-theme="light"] .confirm-overlay {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.confirm-overlay p {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--text);
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.confirm-actions button {
+  padding: 9px 20px;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+
+.confirm-cancel {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border) !important;
+}
+.confirm-cancel:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.confirm-danger {
+  background: var(--error);
+  color: white;
+}
+.confirm-danger:hover { opacity: 0.9; }
