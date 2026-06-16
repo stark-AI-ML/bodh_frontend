@@ -168,6 +168,7 @@ const GettingStartedPage = ({ apiKey, onClose }) => {
                   borderRadius: 0,
                   fontSize: "0.88rem",
                   padding: "20px",
+                  background: "#1E1E2E"
                 }}
               >
                 {examples[tab]}

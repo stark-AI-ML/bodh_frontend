@@ -11,10 +11,10 @@ const GoogleIcon = () => (
 
 const ProfileCircle = ({ baseUrl, onClick, user, hasApiKey }) => {
   const [animateIn, setAnimateIn] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false); // Track image load status
 
   useEffect(() => {
     if (user) {
-      // Small delay so the pop-in animation is visible
       const t = setTimeout(() => setAnimateIn(true), 100);
       return () => clearTimeout(t);
     }
@@ -33,6 +33,10 @@ const ProfileCircle = ({ baseUrl, onClick, user, hasApiKey }) => {
     );
   }
 
+  const initials = user?.display_name
+    ? user.display_name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
+    : "?";
+
   return (
     <div
       className="profile-wrapper"
@@ -41,7 +45,32 @@ const ProfileCircle = ({ baseUrl, onClick, user, hasApiKey }) => {
       style={animateIn ? {} : { opacity: 0, transform: "scale(0)" }}
     >
       <div className="ring" />
-      <img src={user.picture} alt={user.display_name} className="profile-img" />
+      
+      {/* If picture exists AND hasn't failed, show image. Otherwise, show SVG. */}
+      {user.picture && !imgFailed ? (
+        <img
+          src={user.picture}
+          alt={user.display_name}
+          className="profile-img"
+          referrerPolicy="no-referrer" // Fixes the Google 403 Forbidden issue
+          onError={() => setImgFailed(true)} // Triggers React to render the fallback
+        />
+      ) : (
+        <svg className="profile-img" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="12" fill="var(--surface)" />
+          <text
+            x="50%"
+            y="50%"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="var(--accent)"
+            fontSize="12"
+          >
+            {initials}
+          </text>
+        </svg>
+      )}
+
       {hasApiKey && <span className="profile-status-dot" />}
     </div>
   );

@@ -4,16 +4,11 @@ const Header = ({ isLoggedIn, theme, toggleTheme, children }) => {
   return (
     <header className="header">
       <div className="logo" onClick={() => window.scrollTo(0, 0)}>
-        <span>बो</span> BodhAPI
+        <span className="logo-mark">⬢</span> Bodh<span className="logo-label">API</span>
       </div>
       <div className="header-right">
-        {!isLoggedIn && (
-          <div className="request-badge">
-            <span className="count">Free Tier</span> (No Key)
-          </div>
-        )}
-        <button className="theme-btn" onClick={toggleTheme}>
-          {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+        <button className="theme-toggle" onClick={toggleTheme} title="Toggle Theme">
+          {theme === "dark" ? "☀️" : "🌙"}
         </button>
         {children}
       </div>

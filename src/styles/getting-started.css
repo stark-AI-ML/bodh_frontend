@@ -1,0 +1,269 @@
+/* ═══════════════════════════════════════════
+   Getting Started Page
+   ═══════════════════════════════════════════ */
+
+.getting-started-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 400;
+  overflow-y: auto;
+  animation: pageIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.gs-container {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 48px 28px 80px;
+}
+
+/* ── Back ──────────────────── */
+.gs-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+  transition: all 0.15s;
+}
+.gs-back-btn:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+/* ── Hero ──────────────────── */
+.gs-hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.gs-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--success-muted);
+  color: var(--success);
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.gs-hero h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  margin-bottom: 10px;
+}
+
+.gs-hero p {
+  color: var(--text-3);
+  font-size: var(--text-md);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── Key Card ──────────────── */
+.gs-key-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 36px;
+}
+
+.gs-key-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.gs-key-card-title {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-4);
+}
+
+.gs-key-toggle {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+.gs-key-toggle:hover {
+  background: var(--accent-muted);
+}
+
+.gs-key-value {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.gs-key-value .key-text {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text);
+  user-select: all;
+  word-break: break-all;
+}
+
+/* ── Sections ──────────────── */
+.gs-section {
+  margin-bottom: 36px;
+}
+
+.gs-section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gs-section-title .step-number {
+  width: 26px;
+  height: 26px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.gs-section-desc {
+  color: var(--text-3);
+  font-size: var(--text-sm);
+  margin-bottom: 16px;
+  padding-left: 36px;
+  line-height: 1.6;
+}
+
+/* ── Code Tabs ─────────────── */
+.gs-code-tabs {
+  display: flex;
+  gap: 4px;
+  margin-left: 36px;
+}
+
+.gs-code-tab {
+  padding: 7px 14px;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  background: var(--surface-2);
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.gs-code-tab.active {
+  background: var(--surface);
+  color: var(--accent);
+  border-color: var(--border);
+  border-bottom: 1px solid var(--surface);
+  position: relative;
+  z-index: 1;
+}
+
+.gs-code-block-wrap {
+  position: relative;
+  margin-left: 36px;
+  margin-top: -1px;
+}
+
+.gs-code-block-wrap .syntax-block {
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.gs-copy-code-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.15s;
+}
+.gs-copy-code-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: white;
+}
+.gs-copy-code-btn.copied {
+  color: var(--success);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* ── Bottom CTA ────────────── */
+.gs-bottom-cta {
+  text-align: center;
+  padding-top: 16px;
+}
+
+.gs-docs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: var(--text-md);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+}
+.gs-docs-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+}
+.gs-docs-btn:active { transform: translateY(0); }

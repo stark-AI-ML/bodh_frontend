@@ -4,40 +4,10 @@ import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const AuthExampleCard = () => {
   const [tab, setTab] = useState("js");
+  const [copied, setCopied] = useState(false);
 
-  const tabStyle = (current) => ({
-    padding: '6px 14px', 
-    fontSize: '0.85rem', 
-    borderRadius: '6px', 
-    cursor: 'pointer', 
-    border: 'none',
-    fontWeight: '500',
-    background: tab === current ? 'var(--accent)' : 'var(--surface2)', 
-    color: tab === current ? 'white' : 'var(--text2)',
-    transition: 'all 0.2s ease'
-  });
-
-  return (
-    <div className="endpoint-card" id="auth-example">
-      <div className="endpoint-header">
-        <span className="method" style={{ background: 'var(--purple)', boxShadow: '0 2px 8px rgba(139, 92, 246, 0.4)' }}>API</span>
-        <span className="path">Request Example</span>
-      </div>
-
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-        <button style={tabStyle('js')} onClick={() => setTab('js')}>JavaScript</button>
-        <button style={tabStyle('python')} onClick={() => setTab('python')}>Python</button>
-        <button style={tabStyle('curl')} onClick={() => setTab('curl')}>cURL</button>
-      </div>
-      
-
-      <div className="syntax-block" >
-              <SyntaxHighlighter 
-        language={tab === 'js' ? 'javascript' : tab === 'python' ? 'python' : 'bash'} 
-        style={dracula} 
-        customStyle={{ margin: 0, borderRadius: '8px', fontSize: '0.9rem', padding: '16px' }}
-      >
-        {tab === 'js' ? `fetch("http://localhost:5000/api/general/v1/today", {
+  const codeSnippets = {
+    js: `fetch("http://localhost:5000/api/general/v1/today", {
   method: "GET",
   headers: {
     "Authorization": "Bearer YOUR_API_KEY",
@@ -45,8 +15,8 @@ const AuthExampleCard = () => {
   }
 })
 .then(response => response.json())
-.then(data => console.log(data));` : 
-tab === 'python' ? `import requests
+.then(data => console.log(data));`,
+    python: `import requests
 
 url = "http://localhost:5000/api/general/v1/today"
 headers = {
@@ -55,56 +25,104 @@ headers = {
 }
 
 response = requests.get(url, headers=headers)
-print(response.json())` : 
-`curl -X GET "http://localhost:5000/api/general/v1/today" \\
+print(response.json())`,
+    curl: `curl -X GET "http://localhost:5000/api/general/v1/today" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json"`}
-</SyntaxHighlighter>
+  -H "Content-Type: application/json"`
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(codeSnippets[tab]);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  };
+
+  return (
+    <div className="auth-card" id="auth-example">
+      <div className="auth-card-header">
+        <span className="auth-badge">Authentication</span>
+        <span>Bearer Token</span>
       </div>
-
-<br/>
-
-       <p>
-        To access the BodhAPI, you must include your API Key in the <code>Authorization</code> header using the Bearer token scheme. Here's a quick example making a <code>GET</code> request:
-      </p>
+      <div className="auth-card-body">
+        <p className="endpoint-desc" style={{ marginBottom: "20px" }}>
+          To access BodhAPI, include your API Key in the <code>Authorization</code> header. Here's a quick example making a <code>GET</code> request:
+        </p>
+        <div className="lang-tabs">
+          <button className={`lang-tab ${tab === "js" ? "active" : ""}`} onClick={() => setTab("js")}>JavaScript</button>
+          <button className={`lang-tab ${tab === "python" ? "active" : ""}`} onClick={() => setTab("python")}>Python</button>
+          <button className={`lang-tab ${tab === "curl" ? "active" : ""}`} onClick={() => setTab("curl")}>cURL</button>
+        </div>
+        <div className="code-wrap">
+          <button className={`copy-code-btn ${copied ? "copied" : ""}`} onClick={handleCopy}>
+            {copied ? "Copied!" : "Copy"}
+          </button>
+          <SyntaxHighlighter 
+            language={tab === "js" ? "javascript" : tab === "python" ? "python" : "bash"} 
+            style={dracula} 
+            customStyle={{ margin: 0, padding: "20px", fontSize: "0.85rem", background: "#1E1E2E" }}
+          >
+            {codeSnippets[tab]}
+          </SyntaxHighlighter>
+        </div>
+      </div>
     </div>
   );
 };
 
-const EndpointCard = ({ id, method, path, description, params, example }) => (
-  <div className="endpoint-card" id={id}>
-    <div className="endpoint-header">
-      <span className="method">{method}</span>
-      <span className="path">{path}</span>
-    </div>
-    <p>{description}</p>
-    {params && params.length > 0 && (
-      <table>
-        <thead>
-          <tr>
-            <th>Param</th>
-            <th>Type</th>
-            <th>Default/Required</th>
-          </tr>
-        </thead>
-        <tbody>
-          {params.map((p, i) => (
-            <tr key={i}>
-              <td>{p.name}</td>
-              <td>{p.type}</td>
-              <td className={p.required === "yes" ? "param-required" : ""}>
-                {p.required || p.default}
-              </td>
+const EndpointCard = ({ id, method, path, description, params, example }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyPath = async () => {
+    try {
+      await navigator.clipboard.writeText(path);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  };
+
+  return (
+    <div className="endpoint-card" id={id}>
+      <div className="endpoint-header">
+        <span className={`method-badge ${method.toLowerCase()}`}>{method}</span>
+        <span className="endpoint-path">{path}</span>
+        <button className="copy-btn" onClick={handleCopyPath} style={{ marginLeft: "auto" }}>
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+      <p className="endpoint-desc">{description}</p>
+      {params && params.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Type</th>
+              <th>Required</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    )}
-    <pre>
-      <code>{example}</code>
-    </pre>
-  </div>
-);
+          </thead>
+          <tbody>
+            {params.map((p, i) => (
+              <tr key={i}>
+                <td><code>{p.name}</code></td>
+                <td>{p.type}</td>
+                <td className={p.required === "yes" ? "param-required" : ""}>
+                  {p.required === "yes" ? "Yes" : p.default}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      <div style={{ marginTop: "16px" }}>
+        <h4 style={{ fontSize: "var(--text-xs)", textTransform: "uppercase", color: "var(--text-4)", marginBottom: "8px" }}>Example</h4>
+        <pre>
+          <code>{example}</code>
+        </pre>
+      </div>
+    </div>
+  );
+};
 
 const MainContent = () => {
   return (

@@ -58,10 +58,6 @@ const ConsolePanel = ({ open, onClose, isLoggedIn, apiKey, onLoginRequired, base
 
   const handleSend = async () => {
     if (!isLoggedIn) {
-      // Limit logic or enforce login? The user said:
-      // "wherever there is backend api call just make if user is logged in like real api call"
-      // If not logged in, we can either mock or force login.
-      // We will force login for now.
       onLoginRequired();
       return;
     }
@@ -74,7 +70,9 @@ const ConsolePanel = ({ open, onClose, isLoggedIn, apiKey, onLoginRequired, base
       if (v.trim()) queryParams.append(k, v.trim());
     });
 
-    const url = `${baseUrl}/${endpoint}${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
+    // Handle baseUrl safely
+    const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    const url = `${cleanBaseUrl}/api/${endpoint}${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
 
     try {
       const res = await fetch(url, {
@@ -100,7 +98,7 @@ const ConsolePanel = ({ open, onClose, isLoggedIn, apiKey, onLoginRequired, base
     <div className={`console-panel ${open ? "open" : ""}`}>
       <div className="console-header">
         <strong>🧪 API Console</strong>
-        <button className="copy-btn" onClick={onClose}>✕</button>
+        <button className="btn-icon" onClick={onClose}>✕</button>
       </div>
       <div className="console-body">
         <div className="param-group">
@@ -126,7 +124,7 @@ const ConsolePanel = ({ open, onClose, isLoggedIn, apiKey, onLoginRequired, base
           </div>
         ))}
 
-        <button className="btn" onClick={handleSend} disabled={loading}>
+        <button className="console-send-btn" onClick={handleSend} disabled={loading}>
           {loading ? "Sending..." : "🚀 Send Request"}
         </button>
 

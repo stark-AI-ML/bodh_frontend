@@ -8,7 +8,10 @@ import AccountModal from './components/AccountModal';
 import GettingStartedPage from './components/GettingStartedPage';
 import './App.css';
 
-const BASE_URL = 'http://localhost:3000/';
+// Empty BASE_URL so fetch uses relative paths for the proxy
+const BASE_URL = '';
+// Explicit BACKEND_URL for document navigations (like OAuth)
+const BACKEND_URL = 'https://localhost:5000';
 
 // Helper: try chrome.storage.local first, fall back to localStorage
 const persistUser = (data) => {
@@ -62,9 +65,33 @@ const App = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/auth/me`, {
+        let res = await fetch(`${BASE_URL}/auth/me`, {
           credentials: 'include',
+          headers: {
+            Accept: 'application/json',
+          },
         });
+
+        // If the access token is expired/invalid, attempt to refresh it
+        if (res.status === 401) {
+          const refreshRes = await fetch(`${BASE_URL}/refresh`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              Accept: 'application/json',
+            },
+          });
+
+          // If refresh succeeded, retry fetching the user
+          if (refreshRes.ok) {
+            res = await fetch(`${BASE_URL}/auth/me`, {
+              credentials: 'include',
+              headers: {
+                Accept: 'application/json',
+              },
+            });
+          }
+        }
 
         if (res.ok) {
           const data = await res.json();
@@ -134,7 +161,7 @@ const App = () => {
     <div className="app">
       <Header isLoggedIn={isLoggedIn} theme={theme} toggleTheme={toggleTheme}>
         <ProfileCircle
-          baseUrl={BASE_URL}
+          baseUrl={BACKEND_URL + '/'}
           onClick={() => setAccountOpen(true)}
           user={user}
           hasApiKey={!!apiKey}
@@ -159,7 +186,7 @@ const App = () => {
         isLoggedIn={isLoggedIn}
         apiKey={apiKey}
         onLoginRequired={() =>
-          (window.location.href = `${BASE_URL}/auth/google`)
+          (window.location.href = `${BACKEND_URL}/auth/google`)
         }
         baseUrl={BASE_URL}
       />
