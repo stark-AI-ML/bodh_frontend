@@ -6,12 +6,9 @@ import ConsolePanel from './components/ConsolePanel';
 import ProfileCircle from './components/ProfileCircle';
 import AccountModal from './components/AccountModal';
 import GettingStartedPage from './components/GettingStartedPage';
+import { authFetch } from './utils/authFetch';
+import { BASE_URL, ROUTES, url } from './utils/api';
 import './App.css';
-
-// Empty BASE_URL so fetch uses relative paths for the proxy
-const BASE_URL = '';
-// Explicit BACKEND_URL for document navigations (like OAuth)
-const BACKEND_URL = 'https://localhost:5000';
 
 // Helper: try chrome.storage.local first, fall back to localStorage
 const persistUser = (data) => {
@@ -44,16 +41,74 @@ const getCachedUser = () => {
   return null;
 };
 
+// API Keys cache — persisted in localStorage, only refreshed on page load
+const getCachedKeys = () => {
+  try {
+    const cached = localStorage.getItem('bodh_api_keys');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      return Array.isArray(parsed) ? parsed : [];
+    }
+  } catch {}
+  return [];
+};
+
+const persistKeys = (keys) => {
+  try {
+    localStorage.setItem('bodh_api_keys', JSON.stringify(keys));
+  } catch {}
+};
+
+const clearCachedKeys = () => {
+  try {
+    localStorage.removeItem('bodh_api_keys');
+  } catch {}
+};
+
+const safeJson = async (res) => {
+  try {
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.error('Failed to parse JSON:', err);
+  }
+  return null;
+};
+
+// Converts image URL to Base64 so we don't spam Google servers (avoids 429)
+const cacheImageAsBase64 = async (url) => {
+  if (!url || url.startsWith('data:')) return url;
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = () => resolve(url);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return url;
+  }
+};
+
 const App = () => {
   const [theme, setTheme] = useState(
     localStorage.getItem('bodh_theme') || 'dark'
   );
   const [user, setUser] = useState(null);
-  const [apiKey, setApiKey] = useState(null);
   const [consoleOpen, setConsoleOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [gettingStartedOpen, setGettingStartedOpen] = useState(false);
+  const [usageOpen, setUsageOpen] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
+
+  // All keys from /getCurrentKeys — cached in localStorage
+  const [allKeys, setAllKeys] = useState(getCachedKeys());
+
+  // Freshly generated full key — only lives in memory, never persisted
+  const [newlyGeneratedKey, setNewlyGeneratedKey] = useState(null);
 
   // 🌙 Theme
   useEffect(() => {
@@ -61,63 +116,67 @@ const App = () => {
     localStorage.setItem('bodh_theme', theme);
   }, [theme]);
 
-  // 🔐 Fetch session user
+  // 🔐 Fetch session user + keys on page load only
   useEffect(() => {
-    const fetchUser = async () => {
+    const init = async () => {
+      // 1. Fetch user
       try {
-        let res = await fetch(`${BASE_URL}/auth/me`, {
-          credentials: 'include',
-          headers: {
-            Accept: 'application/json',
-          },
-        });
+        const { res, relogin } = await authFetch(url(ROUTES.AUTH_ME));
 
-        // If the access token is expired/invalid, attempt to refresh it
-        if (res.status === 401) {
-          const refreshRes = await fetch(`${BASE_URL}/refresh`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              Accept: 'application/json',
-            },
-          });
-
-          // If refresh succeeded, retry fetching the user
-          if (refreshRes.ok) {
-            res = await fetch(`${BASE_URL}/auth/me`, {
-              credentials: 'include',
-              headers: {
-                Accept: 'application/json',
-              },
-            });
-          }
-        }
-
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-          setApiKey(data.apiKey || null);
-          persistUser(data);
-        } else {
-          // fallback cache
+        if (relogin || (res && res.status === 401)) {
+          // Definitely logged out, clear cache
+          clearPersistedUser();
+          setUser(null);
+        } else if (!res || !res.ok) {
+          // Network error or server error — try cache
           const cached = getCachedUser();
-          if (cached) {
-            setUser(cached);
-            setApiKey(cached.apiKey || null);
+          if (cached) setUser(cached);
+        } else {
+          const data = await safeJson(res);
+          if (data) {
+            if (data.picture && data.picture.startsWith('http')) {
+              // Fetch the Google image once and save as Base64 to prevent 429s
+              data.picture = await cacheImageAsBase64(data.picture);
+            }
+            setUser(data);
+            persistUser(data);
+          } else {
+            // Response was OK but not JSON — fallback
+            const cached = getCachedUser();
+            if (cached) setUser(cached);
           }
         }
       } catch {
         const cached = getCachedUser();
-        if (cached) {
-          setUser(cached);
-          setApiKey(cached.apiKey || null);
-        }
-      } finally {
-        setLoadingUser(false);
+        if (cached) setUser(cached);
       }
+
+      // 2. Fetch keys (only on page load — not on every modal open)
+      try {
+        const { res } = await authFetch(url(ROUTES.GET_CURRENT_KEYS));
+
+        if (res && res.status === 401) {
+          clearCachedKeys();
+          setAllKeys([]);
+        } else if (res && res.ok) {
+          const data = await safeJson(res);
+          if (data) {
+            let keys = [];
+            if (Array.isArray(data)) {
+              keys = data;
+            } else if (Array.isArray(data.keys)) {
+              keys = data.keys;
+            }
+            setAllKeys(keys);
+            persistKeys(keys);
+          }
+        }
+      } catch {}
+
+      setLoadingUser(false);
     };
 
-    fetchUser();
+    init();
   }, []);
 
   const toggleTheme = () => {
@@ -126,33 +185,65 @@ const App = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${BASE_URL}/auth/logout`, {
+      await fetch(url(ROUTES.AUTH_LOGOUT), {
         method: 'POST',
         credentials: 'include',
       });
     } catch {}
 
     clearPersistedUser();
+    clearCachedKeys();
     setUser(null);
-    setApiKey(null);
+    setAllKeys([]);
+    setNewlyGeneratedKey(null);
   };
 
-  const handleApiKeyGenerated = (newKey) => {
-    setApiKey(newKey);
-    // Update cached user
-    if (user) {
-      const updated = { ...user, apiKey: newKey };
-      setUser(updated);
-      persistUser(updated);
-    }
+  const handleApiKeyGenerated = (fullKey, keyMeta) => {
+    // fullKey = the full secret string (only held in memory)
+    // keyMeta = { name, key (prefix), expiresAt, lastUsed }
+    setNewlyGeneratedKey(fullKey);
+
+    // Update the cached keys list
+    setAllKeys((prev) => {
+      const updated = [keyMeta, ...prev];
+      persistKeys(updated);
+      return updated;
+    });
   };
 
-  const handleOpenGettingStarted = () => {
+  const handleApiKeyDeleted = (deletedKeyPrefix) => {
+    setAllKeys((prev) => {
+      const updated = prev.filter((k) => k.key !== deletedKeyPrefix);
+      persistKeys(updated);
+      return updated;
+    });
+  };
+
+  const handleOpenUsage = () => {
     setAccountOpen(false);
-    setTimeout(() => setGettingStartedOpen(true), 200);
+    setTimeout(() => setUsageOpen(true), 200);
+  };
+
+  const handleCloseUsage = () => {
+    // When user closes the usage page, the full key is gone forever
+    setNewlyGeneratedKey(null);
+    setUsageOpen(false);
+  };
+
+  const handleReloginRequired = () => {
+    // Session is fully dead — clear everything and force re-login
+    clearPersistedUser();
+    clearCachedKeys();
+    setUser(null);
+    setAllKeys([]);
+    setAccountOpen(false);
+    // Optionally redirect to login (Commented out per user request)
+    // window.location.href = url(ROUTES.AUTH_GOOGLE);
   };
 
   const isLoggedIn = !!user;
+  const latestKey =
+    Array.isArray(allKeys) && allKeys.length > 0 ? allKeys[0] : null;
 
   // Don't render anything until we know the auth state
   if (loadingUser) return null;
@@ -161,10 +252,10 @@ const App = () => {
     <div className="app">
       <Header isLoggedIn={isLoggedIn} theme={theme} toggleTheme={toggleTheme}>
         <ProfileCircle
-          baseUrl={BACKEND_URL + '/'}
+          baseUrl={BASE_URL + '/'}
           onClick={() => setAccountOpen(true)}
           user={user}
-          hasApiKey={!!apiKey}
+          hasApiKey={!!latestKey}
         />
       </Header>
 
@@ -184,9 +275,9 @@ const App = () => {
         open={consoleOpen}
         onClose={() => setConsoleOpen(false)}
         isLoggedIn={isLoggedIn}
-        apiKey={apiKey}
+        apiKey={latestKey?.key}
         onLoginRequired={() =>
-          (window.location.href = `${BACKEND_URL}/auth/google`)
+          (window.location.href = url(ROUTES.AUTH_GOOGLE))
         }
         baseUrl={BASE_URL}
       />
@@ -197,18 +288,22 @@ const App = () => {
           onClose={() => setAccountOpen(false)}
           baseUrl={BASE_URL}
           user={user}
-          apiKey={apiKey}
+          latestKey={latestKey}
           onApiKeyGenerated={handleApiKeyGenerated}
           onLogout={handleLogout}
-          onOpenGettingStarted={handleOpenGettingStarted}
+          onOpenUsage={handleOpenUsage}
+          onReloginRequired={handleReloginRequired}
         />
       )}
 
-      {/* Getting Started Overlay */}
-      {gettingStartedOpen && (
+      {/* Usage Page */}
+      {usageOpen && (
         <GettingStartedPage
-          apiKey={apiKey}
-          onClose={() => setGettingStartedOpen(false)}
+          newlyGeneratedKey={newlyGeneratedKey}
+          allKeys={allKeys}
+          onClose={handleCloseUsage}
+          baseUrl={BASE_URL}
+          onKeyDeleted={handleApiKeyDeleted}
         />
       )}
     </div>

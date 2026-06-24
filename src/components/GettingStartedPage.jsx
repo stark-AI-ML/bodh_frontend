@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { authFetch } from "../utils/authFetch";
+import { showToast } from "../utils/toast";
+import { url, ROUTES } from "../utils/api";
 
 const getCodeExamples = (apiKey) => {
   const key = apiKey || "YOUR_API_KEY";
@@ -30,23 +33,86 @@ print(response.json())`,
   };
 };
 
-const GettingStartedPage = ({ apiKey, onClose }) => {
+const CopyIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}>
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}>
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const TrashIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}>
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+  </svg>
+);
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "Never";
+  const isoStr = dateStr.replace(" ", "T");
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+};
+
+const getPrefix = (key) => {
+  if (!key) return "";
+  return key.length > 21 ? key.substring(0, 21) + "..." : key;
+};
+
+/**
+ * GettingStartedPage — "Usage" page
+ * 
+ * Props:
+ *   newlyGeneratedKey — the FULL key string, only present right after generation (one-time)
+ *   allKeys           — array from localStorage cache of /getCurrentKeys
+ *   onClose           — go back to docs
+ */
+const GettingStartedPage = ({ newlyGeneratedKey, allKeys = [], onClose, baseUrl, onKeyDeleted }) => {
   const [tab, setTab] = useState("js");
-  const [showKey, setShowKey] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(null);
 
-  const examples = getCodeExamples(apiKey);
+  // Use full key in code examples only if freshly generated, otherwise placeholder
+  const examples = getCodeExamples(newlyGeneratedKey);
 
-  const maskKey = (key) => {
-    if (!key || key.length < 10) return key || "";
-    return `${key.slice(0, 8)}${"•".repeat(16)}${key.slice(-6)}`;
+  const handleDeleteKey = async (keyPrefix) => {
+    if (!window.confirm("Are you sure you want to delete this API key? This action cannot be undone.")) return;
+    
+    setIsDeleting(keyPrefix);
+    try {
+      const { res } = await authFetch(url(ROUTES.REMOVE_KEY), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: keyPrefix })
+      });
+      
+      if (res && res.ok) {
+        showToast("API key deleted successfully.", "success");
+        onKeyDeleted(keyPrefix);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.message || data.error || "Failed to delete API key.", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("An error occurred while deleting the key.", "error");
+    } finally {
+      setIsDeleting(null);
+    }
   };
 
   const handleCopyKey = async () => {
-    if (!apiKey) return;
+    if (!newlyGeneratedKey) return;
     try {
-      await navigator.clipboard.writeText(apiKey);
+      await navigator.clipboard.writeText(newlyGeneratedKey);
       setCopiedKey(true);
       setTimeout(() => setCopiedKey(false), 2000);
     } catch {}
@@ -69,69 +135,54 @@ const GettingStartedPage = ({ apiKey, onClose }) => {
   return (
     <div className="getting-started-overlay">
       <div className="gs-container">
-        {/* Back button */}
+        {/* Back */}
         <button className="gs-back-btn" onClick={onClose}>
-          ← Back to Docs
+          ← Back
         </button>
 
-        {/* Hero */}
-        <div className="gs-hero">
-          <div className="gs-hero-badge">
-            <span>✓</span> API Key Generated
-          </div>
-          <h1>You're all set! 🎉</h1>
-          <p>
-            Your API key is ready. Use it in the <code>Authorization</code>{" "}
-            header to authenticate your requests to BodhAPI.
-          </p>
-        </div>
+        {/* One-Time Key Copy — only shown if freshly generated */}
+        {newlyGeneratedKey && (
+          <div className="usage-key-section">
+            <div className="usage-key-header">
+              <div className="usage-key-badge">
+                <span className="usage-badge-dot" />
+                New Key Created
+              </div>
+            </div>
 
-        {/* Key Card */}
-        <div className="gs-key-card">
-          <div className="gs-key-card-header">
-            <span className="gs-key-card-title">Your API Key</span>
-            <button
-              className="gs-key-toggle"
-              onClick={() => setShowKey(!showKey)}
-            >
-              {showKey ? "🙈 Hide" : "👁 Reveal"}
-            </button>
-          </div>
-          <div className="gs-key-value">
-            <span className="key-text">
-              {showKey ? apiKey : maskKey(apiKey)}
-            </span>
-            <button
-              className={`key-copy-btn ${copiedKey ? "copied" : ""}`}
-              onClick={handleCopyKey}
-              title="Copy API Key"
-            >
-              {copiedKey ? (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}>
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
+            <div className="usage-key-warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:18,height:18,flexShrink:0}}>
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <span>Copy your key now. <strong>It will not be shown again.</strong></span>
+            </div>
 
-        {/* Step 1: Install / Setup */}
-        <div className="gs-section">
-          <h3 className="gs-section-title">
-            <span className="step-number">1</span>
-            Add Your Key to the Request
-          </h3>
-          <p className="gs-section-desc">
-            Include your API key in the <code>Authorization</code> header as a
-            Bearer token.
+            <div className="usage-key-display">
+              <code className="usage-key-value">{newlyGeneratedKey}</code>
+              <button
+                className={`usage-copy-btn ${copiedKey ? "copied" : ""}`}
+                onClick={handleCopyKey}
+                title="Copy API Key"
+              >
+                {copiedKey ? (
+                  <><CheckIcon /> Copied!</>
+                ) : (
+                  <><CopyIcon /> Copy</>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Quick Usage — code examples */}
+        <div className="usage-code-section">
+          <h3 className="usage-section-title">Quick Usage</h3>
+          <p className="usage-section-desc">
+            Include your API key in the <code>Authorization</code> header as a Bearer token.
           </p>
 
-          {/* Tabs */}
           <div className="gs-code-tabs">
             {[
               { key: "js", label: "JavaScript" },
@@ -151,7 +202,6 @@ const GettingStartedPage = ({ apiKey, onClose }) => {
             ))}
           </div>
 
-          {/* Code Block */}
           <div className="gs-code-block-wrap">
             <button
               className={`gs-copy-code-btn ${copiedCode ? "copied" : ""}`}
@@ -177,31 +227,46 @@ const GettingStartedPage = ({ apiKey, onClose }) => {
           </div>
         </div>
 
-        {/* Step 2 */}
-        <div className="gs-section">
-          <h3 className="gs-section-title">
-            <span className="step-number">2</span>
-            Make Your First Request
-          </h3>
-          <p className="gs-section-desc">
-            Run the code above to fetch today's top Indian news. The response
-            returns a JSON array of news articles with headlines, categories,
-            sentiment scores, and more.
-          </p>
-        </div>
-
-        {/* Step 3 */}
-        <div className="gs-section">
-          <h3 className="gs-section-title">
-            <span className="step-number">3</span>
-            Explore the API
-          </h3>
-          <p className="gs-section-desc">
-            Browse all available endpoints in the documentation — filter by
-            state, sentiment, category, entities, and more. Use the built-in API
-            Console to test endpoints live.
-          </p>
-        </div>
+        {/* All Keys Table */}
+        {Array.isArray(allKeys) && allKeys.length > 0 && (
+          <div className="usage-keys-table-section">
+            <h3 className="usage-section-title">Your API Keys</h3>
+            <div className="api-key-table-container">
+              <table className="api-key-table">
+                <thead>
+                  <tr>
+                    <th>Key</th>
+                    <th>Expires</th>
+                    <th>Last Used</th>
+                    <th style={{ width: '60px', textAlign: 'center' }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allKeys.map((k, idx) => (
+                    <tr key={idx} className="api-key-row">
+                      <td className="col-key">
+                        <div className="key-name">{k.name || "API Key"}</div>
+                        <div className="key-prefix">{getPrefix(k.key)}</div>
+                      </td>
+                      <td className="col-expires">{formatDate(k.expiresAt)}</td>
+                      <td className="col-lastused">{k.lastUsed || "Never"}</td>
+                      <td className="col-actions" style={{ textAlign: 'center' }}>
+                        <button
+                          className="btn-icon delete-key-btn"
+                          onClick={() => handleDeleteKey(k.key)}
+                          disabled={isDeleting === k.key}
+                          title="Delete Key"
+                        >
+                          {isDeleting === k.key ? <span className="spinner-small" /> : <TrashIcon />}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* CTA */}
         <div className="gs-bottom-cta">

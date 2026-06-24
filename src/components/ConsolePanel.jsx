@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BASE_URL } from "../utils/api";
 
 const paramConfig = {
   "general/v1/today": ["limit"],
@@ -71,7 +72,7 @@ const ConsolePanel = ({ open, onClose, isLoggedIn, apiKey, onLoginRequired, base
     });
 
     // Handle baseUrl safely
-    const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
     const url = `${cleanBaseUrl}/api/${endpoint}${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
 
     try {

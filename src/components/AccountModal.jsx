@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { authFetch } from "../utils/authFetch";
+import { showToast } from "../utils/toast";
+import { url, ROUTES } from "../utils/api";
 
 const CopyIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -13,24 +16,28 @@ const CheckIcon = () => (
   </svg>
 );
 
-const maskKey = (key) => {
-  if (!key || key.length < 10) return key || "";
-  return `${key.slice(0, 8)}${"•".repeat(12)}${key.slice(-6)}`;
+const getPrefix = (key) => {
+  if (!key) return "";
+  return key.length > 21 ? key.substring(0, 21) + "..." : key;
 };
 
 const AccountModal = ({
   onClose,
   baseUrl,
   user,
-  apiKey,
+  latestKey, // { name, key (prefix), expiresAt } — from cached /getCurrentKeys
   onApiKeyGenerated,
   onLogout,
-  onOpenGettingStarted,
+  onOpenUsage,
+  onReloginRequired,
 }) => {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [confirmRegen, setConfirmRegen] = useState(false);
   const [closing, setClosing] = useState(false);
+
+  // Generation state
+  const [showNamePrompt, setShowNamePrompt] = useState(false);
+  const [newKeyName, setNewKeyName] = useState("");
 
   const handleClose = () => {
     setClosing(true);
@@ -38,35 +45,74 @@ const AccountModal = ({
   };
 
   const handleCopy = async () => {
-    if (!apiKey) return;
+    if (!latestKey?.key) return;
     try {
-      await navigator.clipboard.writeText(apiKey);
+      await navigator.clipboard.writeText(latestKey.key);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {}
   };
 
-  const generateKey = async () => {
+  const startGenerate = () => {
+    setShowNamePrompt(true);
+    setNewKeyName("");
+  };
+
+  const cancelGenerate = () => {
+    setShowNamePrompt(false);
+    setNewKeyName("");
+  };
+
+  const confirmGenerateKey = async (e) => {
+    e.preventDefault();
+    if (!newKeyName.trim()) return;
+
     setLoading(true);
     try {
-      const res = await fetch(`${baseUrl}/auth/generate-key`, {
+      const { res, relogin } = await authFetch(url(ROUTES.AUTH_GENERATE_KEY), {
         method: "POST",
-        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newKeyName.trim() }),
       });
-      const data = await res.json();
-      if (data.apiKey) {
-        onApiKeyGenerated(data.apiKey);
+
+      if (relogin) { onReloginRequired(); return; }
+
+      if (res && res.ok) {
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json();
+          if (data.apiKey) {
+            // Pass full key to App.js so Usage page can show it once
+            onApiKeyGenerated(data.apiKey, {
+              name: newKeyName.trim(),
+              key: getPrefix(data.apiKey),
+              expiresAt: data.expiresAt || null,
+              lastUsed: "Never",
+            });
+            setShowNamePrompt(false);
+            // Open Usage page so user can copy the full key
+            onOpenUsage();
+          }
+        } else {
+          console.error("Generate key failed: Response is not JSON");
+        }
+      } else if (res && res.status === 403) {
+        const errorData = await res.json().catch(() => ({}));
+        const errMsg = errorData.message || errorData.error || "";
+        if (errMsg.includes("number of api_keys exceeded")) {
+          showToast("API Key limit exceeded. Please delete an existing key or upgrade your plan.", "error");
+        } else {
+          showToast(errMsg || "Access denied. Failed to generate key.", "error");
+        }
+      } else if (res) {
+        const errorData = await res.json().catch(() => ({}));
+        showToast(errorData.message || errorData.error || "An error occurred while generating the key.", "error");
       }
     } catch (err) {
       console.error("Failed to generate key:", err);
     } finally {
       setLoading(false);
-      setConfirmRegen(false);
     }
-  };
-
-  const handleRegenerate = () => {
-    setConfirmRegen(true);
   };
 
   const handleLogout = () => {
@@ -79,24 +125,6 @@ const AccountModal = ({
   return (
     <div className={`modal-backdrop ${closing ? "closing" : ""}`} onClick={handleClose}>
       <div className="account-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Confirm Regenerate Overlay */}
-        {confirmRegen && (
-          <div className="confirm-overlay">
-            <p>
-              <strong>Regenerate API Key?</strong>
-              <br />
-              Your current key will stop working immediately.
-            </p>
-            <div className="confirm-actions">
-              <button className="confirm-cancel" onClick={() => setConfirmRegen(false)}>
-                Cancel
-              </button>
-              <button className="confirm-danger" onClick={generateKey} disabled={loading}>
-                {loading ? "Generating…" : "Yes, Regenerate"}
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Header */}
         <div className="account-modal-header">
@@ -118,11 +146,11 @@ const AccountModal = ({
           </div>
         </div>
 
-        {/* API Key Section */}
-        {apiKey ? (
+        {/* API Key Section — latest key only */}
+        {latestKey ? (
           <div className="account-key-section">
             <div className="key-section-header">
-              <span className="key-section-title">API Key</span>
+              <span className="key-section-title">Active API Key</span>
               <span className="key-status-badge">
                 <span className="status-dot" />
                 Active
@@ -130,25 +158,25 @@ const AccountModal = ({
             </div>
 
             <div className="key-display-box">
-              <span className="key-text">{maskKey(apiKey)}</span>
+              <div className="key-info">
+                <span className="key-name-label">{latestKey.name || "API Key"}</span>
+                <span className="key-text">{getPrefix(latestKey.key)}</span>
+              </div>
               <button
                 className={`key-copy-btn ${copied ? "copied" : ""}`}
                 onClick={handleCopy}
-                title="Copy to clipboard"
+                title="Copy prefix"
               >
                 {copied ? <CheckIcon /> : <CopyIcon />}
               </button>
             </div>
 
             <div className="key-actions">
-              <button className="key-action-btn secondary" onClick={handleRegenerate}>
-                ↻ Regenerate
+              <button className="key-action-btn secondary" onClick={startGenerate}>
+                + New Key
               </button>
-              <button
-                className="key-action-btn primary"
-                onClick={onOpenGettingStarted}
-              >
-                Quick Start →
+              <button className="key-action-btn primary" onClick={onOpenUsage}>
+                View Usage →
               </button>
             </div>
           </div>
@@ -159,19 +187,33 @@ const AccountModal = ({
             <p className="no-key-desc">
               Get your personal API key to start making authenticated requests to BodhAPI endpoints.
             </p>
-            <button
-              className="generate-key-btn"
-              onClick={generateKey}
-              disabled={loading}
-            >
-              {loading ? (
-                "Generating…"
-              ) : (
-                <>
-                  <span>⚡</span> Generate API Key
-                </>
-              )}
+            <button className="generate-key-btn" onClick={startGenerate}>
+              ⚡ Create API Key
             </button>
+          </div>
+        )}
+
+        {/* Inline Name Prompt */}
+        {showNamePrompt && (
+          <div className="account-key-section" style={{ paddingTop: latestKey ? 0 : undefined }}>
+            <form className="generate-key-form" onSubmit={confirmGenerateKey}>
+              <input
+                type="text"
+                placeholder="Key Name (e.g., My Web App)"
+                value={newKeyName}
+                onChange={(e) => setNewKeyName(e.target.value)}
+                autoFocus
+                disabled={loading}
+              />
+              <div className="generate-form-actions">
+                <button type="button" className="btn-cancel" onClick={cancelGenerate} disabled={loading}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-create" disabled={!newKeyName.trim() || loading}>
+                  {loading ? "Creating…" : "Create Key"}
+                </button>
+              </div>
+            </form>
           </div>
         )}
 
@@ -180,11 +222,6 @@ const AccountModal = ({
           <button className="signout-btn" onClick={handleLogout}>
             ← Sign Out
           </button>
-          {apiKey && (
-            <button className="quickstart-link" onClick={onOpenGettingStarted}>
-              View Quick Start →
-            </button>
-          )}
         </div>
       </div>
     </div>

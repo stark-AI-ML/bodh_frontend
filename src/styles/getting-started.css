@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   Getting Started Page
+   Usage Page (formerly Getting Started)
    ═══════════════════════════════════════════ */
 
 .getting-started-overlay {
@@ -39,41 +39,8 @@
   background: var(--surface-2);
 }
 
-/* ── Hero ──────────────────── */
-.gs-hero {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.gs-hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--success-muted);
-  color: var(--success);
-  border: 1px solid rgba(34, 197, 94, 0.15);
-  padding: 5px 14px;
-  border-radius: var(--radius-full);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  margin-bottom: 16px;
-}
-
-.gs-hero h1 {
-  font-family: var(--font-display);
-  font-size: var(--text-3xl);
-  margin-bottom: 10px;
-}
-
-.gs-hero p {
-  color: var(--text-3);
-  font-size: var(--text-md);
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-/* ── Key Card ──────────────── */
-.gs-key-card {
+/* ── Key Section (copy-once) ─ */
+.usage-key-section {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -81,99 +48,131 @@
   margin-bottom: 36px;
 }
 
-.gs-key-card-header {
-  display: flex;
+.usage-key-header {
+  margin-bottom: 16px;
+}
+
+.usage-key-badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.gs-key-card-title {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-4);
-}
-
-.gs-key-toggle {
-  background: none;
-  border: none;
-  color: var(--accent);
-  font-family: var(--font);
+  gap: 8px;
+  background: var(--success-muted);
+  color: var(--success);
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
   font-size: var(--text-xs);
   font-weight: 600;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  transition: background 0.15s;
-}
-.gs-key-toggle:hover {
-  background: var(--accent-muted);
 }
 
-.gs-key-value {
+.usage-badge-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: gentleBounce 2s ease-in-out infinite;
+}
+
+.usage-key-warning {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--surface-inset);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: var(--text-sm);
+  color: #f59e0b;
+  line-height: 1.5;
+}
+
+.usage-key-warning strong {
+  color: #fbbf24;
+}
+
+.usage-key-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #1E1E2E;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 14px 16px;
 }
 
-.gs-key-value .key-text {
+.usage-key-value {
   flex: 1;
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  color: var(--text);
-  user-select: all;
+  color: #e2e8f0;
   word-break: break-all;
+  user-select: all;
+  background: none;
+  letter-spacing: 0.3px;
 }
 
-/* ── Sections ──────────────── */
-.gs-section {
+.usage-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.usage-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.usage-copy-btn.copied {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: var(--success);
+}
+
+/* ── Quick Usage Section ────── */
+.usage-code-section {
   margin-bottom: 36px;
 }
 
-.gs-section-title {
+.usage-section-title {
   font-family: var(--font-display);
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--text);
   margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
-.gs-section-title .step-number {
-  width: 26px;
-  height: 26px;
-  background: var(--accent);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.gs-section-desc {
+.usage-section-desc {
   color: var(--text-3);
   font-size: var(--text-sm);
   margin-bottom: 16px;
-  padding-left: 36px;
   line-height: 1.6;
+}
+
+.usage-section-desc code {
+  background: var(--surface-2);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85em;
 }
 
 /* ── Code Tabs ─────────────── */
 .gs-code-tabs {
   display: flex;
   gap: 4px;
-  margin-left: 36px;
 }
 
 .gs-code-tab {
@@ -191,17 +190,16 @@
 }
 
 .gs-code-tab.active {
-  background: var(--surface);
+  background: #1E1E2E;
   color: var(--accent);
   border-color: var(--border);
-  border-bottom: 1px solid var(--surface);
+  border-bottom: 1px solid #1E1E2E;
   position: relative;
   z-index: 1;
 }
 
 .gs-code-block-wrap {
   position: relative;
-  margin-left: 36px;
   margin-top: -1px;
 }
 
@@ -267,3 +265,52 @@
   box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
 }
 .gs-docs-btn:active { transform: translateY(0); }
+
+/* ── Keys Table in Usage Page ─ */
+.usage-keys-table-section {
+  margin-bottom: 36px;
+}
+
+.usage-keys-table-section .api-key-table-container {
+  margin-top: 16px;
+}
+
+/* ── Delete Button ─────────── */
+.api-key-row .col-actions .delete-key-btn {
+  opacity: 0.5;
+  color: var(--text-3);
+  transition: all 0.2s;
+  border-color: transparent;
+  width: 32px;
+  height: 32px;
+}
+
+.api-key-row:hover .col-actions .delete-key-btn {
+  opacity: 1;
+}
+
+.api-key-row .col-actions .delete-key-btn:hover:not(:disabled) {
+  background: var(--error-muted);
+  color: var(--error);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.api-key-row .col-actions .delete-key-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ── Spinner ───────────────── */
+.spinner-small {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

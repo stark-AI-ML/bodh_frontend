@@ -7,7 +7,7 @@ const AuthExampleCard = () => {
   const [copied, setCopied] = useState(false);
 
   const codeSnippets = {
-    js: `fetch("http://localhost:5000/api/general/v1/today", {
+    js: `fetch("https://bodhapi.online/api/general/v1/today", {
   method: "GET",
   headers: {
     "Authorization": "Bearer YOUR_API_KEY",
@@ -18,7 +18,7 @@ const AuthExampleCard = () => {
 .then(data => console.log(data));`,
     python: `import requests
 
-url = "http://localhost:5000/api/general/v1/today"
+url = "https://bodhapi.online/api/general/v1/today"
 headers = {
     "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
@@ -26,7 +26,7 @@ headers = {
 
 response = requests.get(url, headers=headers)
 print(response.json())`,
-    curl: `curl -X GET "http://localhost:5000/api/general/v1/today" \\
+    curl: `curl -X GET "https://bodhapi.online/api/general/v1/today" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json"`
   };
@@ -128,7 +128,7 @@ const MainContent = () => {
   return (
     <main className="main" id="mainContent">
       <h1>📡 BodhAPI Documentation</h1>
-      <p>High-performance REST API for Indian news intelligence. Base URL: <code>http://localhost:5000/api</code></p>
+      <p>High-performance REST API for Indian news intelligence. Base URL: <code>https://bodhapi.online/api</code></p>
 
       <AuthExampleCard />
 
