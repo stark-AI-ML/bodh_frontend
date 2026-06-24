@@ -99,7 +99,6 @@ const App = () => {
     localStorage.getItem('bodh_theme') || 'dark'
   );
   const [user, setUser] = useState(null);
-  const [consoleOpen, setConsoleOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [usageOpen, setUsageOpen] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -262,18 +261,8 @@ const App = () => {
       <Sidebar />
       <MainContent />
 
-      {/* Console */}
-      <button
-        className="console-toggle"
-        onClick={() => setConsoleOpen(!consoleOpen)}
-        title="API Console"
-      >
-        ⌨️
-      </button>
-
+      {/* Persistent API Console */}
       <ConsolePanel
-        open={consoleOpen}
-        onClose={() => setConsoleOpen(false)}
         isLoggedIn={isLoggedIn}
         apiKey={latestKey?.key}
         onLoginRequired={() =>

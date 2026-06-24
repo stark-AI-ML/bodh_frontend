@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════ */
 
 .app {
-  display: flex;
+  display: block;
   min-height: 100vh;
   background: var(--bg);
 }
@@ -167,11 +167,11 @@
 /* ── Main Content Area ─────── */
 .main {
   margin-left: var(--sidebar-w);
+  margin-right: var(--console-w);
   margin-top: var(--header-h);
-  flex: 1;
   padding: 48px 56px 120px;
-  max-width: calc(var(--content-max) + 112px);
-  transition: margin 0.25s;
+  max-width: calc(100% - var(--sidebar-w) - var(--console-w));
+  transition: margin 0.25s, max-width 0.25s;
 }
 
 .main .hero-subtitle {
@@ -205,9 +205,20 @@
 }
 
 /* ── Responsive ────────────── */
+@media (max-width: 1200px) {
+  .main { 
+    margin-right: 0; 
+    max-width: calc(100% - var(--sidebar-w)); 
+  }
+}
+
 @media (max-width: 1024px) {
   .sidebar { transform: translateX(-100%); }
-  .main { margin-left: 0; padding: 32px 20px 100px; }
+  .main { 
+    margin-left: 0; 
+    padding: 32px 20px 100px; 
+    max-width: 100%; 
+  }
 }
 
 @media (max-width: 640px) {

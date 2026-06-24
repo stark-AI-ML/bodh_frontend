@@ -37,11 +37,18 @@ const highlightJSON = (obj) => {
   return json;
 };
 
-const ConsolePanel = ({ open, onClose, isLoggedIn, apiKey, onLoginRequired, baseUrl }) => {
+const ConsolePanel = ({ isLoggedIn, apiKey, onLoginRequired, baseUrl }) => {
   const [endpoint, setEndpoint] = useState("general/v1/today");
   const [params, setParams] = useState({ limit: "5" });
   const [responseHtml, setResponseHtml] = useState("Response will appear here…");
   const [loading, setLoading] = useState(false);
+  const [localApiKey, setLocalApiKey] = useState(apiKey || "");
+
+  useEffect(() => {
+    if (apiKey) {
+      setLocalApiKey(apiKey);
+    }
+  }, [apiKey]);
 
   useEffect(() => {
     // Reset params when endpoint changes
@@ -58,8 +65,8 @@ const ConsolePanel = ({ open, onClose, isLoggedIn, apiKey, onLoginRequired, base
   };
 
   const handleSend = async () => {
-    if (!isLoggedIn) {
-      onLoginRequired();
+    if (!localApiKey.trim()) {
+      setResponseHtml("<span class='json-error'>Please provide an API key.</span>");
       return;
     }
 
@@ -79,7 +86,7 @@ const ConsolePanel = ({ open, onClose, isLoggedIn, apiKey, onLoginRequired, base
       const res = await fetch(url, {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${apiKey}`,
+          "Authorization": `Bearer ${localApiKey.trim()}`,
           "Content-Type": "application/json"
         }
       });
@@ -96,12 +103,27 @@ const ConsolePanel = ({ open, onClose, isLoggedIn, apiKey, onLoginRequired, base
   };
 
   return (
-    <div className={`console-panel ${open ? "open" : ""}`}>
+    <div className="console-panel">
       <div className="console-header">
         <strong>🧪 API Console</strong>
-        <button className="btn-icon" onClick={onClose}>✕</button>
       </div>
       <div className="console-body">
+        {(!isLoggedIn || !apiKey) && (
+          <div className="console-alert">
+            Please <a href="#" onClick={(e) => { e.preventDefault(); onLoginRequired(); }}>login</a> and generate an API key, or paste an existing one below for a quick demo.
+          </div>
+        )}
+
+        <div className="param-group">
+          <label>API Key</label>
+          <input
+            type="text"
+            placeholder="Paste your API key here"
+            value={localApiKey}
+            onChange={(e) => setLocalApiKey(e.target.value)}
+          />
+        </div>
+
         <div className="param-group">
           <label>Endpoint</label>
           <select value={endpoint} onChange={(e) => setEndpoint(e.target.value)}>
