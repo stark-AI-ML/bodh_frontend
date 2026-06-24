@@ -99,7 +99,6 @@ const App = () => {
     localStorage.getItem('bodh_theme') || 'dark'
   );
   const [user, setUser] = useState(null);
-  const [consoleOpen, setConsoleOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [usageOpen, setUsageOpen] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -134,12 +133,19 @@ const App = () => {
         } else {
           const data = await safeJson(res);
           if (data) {
-            if (data.picture && data.picture.startsWith('http')) {
-              // Fetch the Google image once and save as Base64 to prevent 429s
-              data.picture = await cacheImageAsBase64(data.picture);
-            }
             setUser(data);
             persistUser(data);
+            
+            if (data.picture && typeof data.picture === 'string' && data.picture.startsWith('http')) {
+              // Fetch the Google image asynchronously so we don't block the UI loading
+              cacheImageAsBase64(data.picture).then(base64Str => {
+                if (base64Str !== data.picture) {
+                  const updatedUser = { ...data, picture: base64Str };
+                  setUser(updatedUser);
+                  persistUser(updatedUser);
+                }
+              }).catch(() => {});
+            }
           } else {
             // Response was OK but not JSON — fallback
             const cached = getCachedUser();
@@ -151,7 +157,11 @@ const App = () => {
         if (cached) setUser(cached);
       }
 
+      // We have the user state, stop the loading screen immediately!
+      setLoadingUser(false);
+
       // 2. Fetch keys (only on page load — not on every modal open)
+      // This happens in the background, we don't need to block the UI for it
       try {
         const { res } = await authFetch(url(ROUTES.GET_CURRENT_KEYS));
 
@@ -172,8 +182,6 @@ const App = () => {
           }
         }
       } catch {}
-
-      setLoadingUser(false);
     };
 
     init();
@@ -199,21 +207,27 @@ const App = () => {
   };
 
   const handleApiKeyGenerated = (fullKey, keyMeta) => {
+    // Defensive check
+    if (!fullKey || !keyMeta || typeof keyMeta !== 'object') return;
+    
     // fullKey = the full secret string (only held in memory)
     // keyMeta = { name, key (prefix), expiresAt, lastUsed }
     setNewlyGeneratedKey(fullKey);
 
     // Update the cached keys list
     setAllKeys((prev) => {
-      const updated = [keyMeta, ...prev];
+      const prevKeys = Array.isArray(prev) ? prev : [];
+      const updated = [keyMeta, ...prevKeys].filter(k => k && typeof k === 'object');
       persistKeys(updated);
       return updated;
     });
   };
 
   const handleApiKeyDeleted = (deletedKeyPrefix) => {
+    if (!deletedKeyPrefix) return;
     setAllKeys((prev) => {
-      const updated = prev.filter((k) => k.key !== deletedKeyPrefix);
+      const prevKeys = Array.isArray(prev) ? prev : [];
+      const updated = prevKeys.filter((k) => k && typeof k === 'object' && k.key !== deletedKeyPrefix);
       persistKeys(updated);
       return updated;
     });
@@ -262,18 +276,7 @@ const App = () => {
       <Sidebar />
       <MainContent />
 
-      {/* Console */}
-      <button
-        className="console-toggle"
-        onClick={() => setConsoleOpen(!consoleOpen)}
-        title="API Console"
-      >
-        ⌨️
-      </button>
-
       <ConsolePanel
-        open={consoleOpen}
-        onClose={() => setConsoleOpen(false)}
         isLoggedIn={isLoggedIn}
         apiKey={latestKey?.key}
         onLoginRequired={() =>
