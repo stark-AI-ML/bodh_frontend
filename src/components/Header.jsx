@@ -1,10 +1,18 @@
 import React from "react";
 
+const BodhLogo = () => (
+  <svg className="logo-mark" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2L21 7.196v9.608L12 22l-9-5.196V7.196L12 2z" />
+    <path d="M7 12c1.667-2.5 3.333-3.5 5-3.5s3.333 1 5 3.5c-1.667 2.5-3.333 3.5-5 3.5s-3.333-1-5-3.5z" />
+    <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
+  </svg>
+);
+
 const Header = ({ isLoggedIn, theme, toggleTheme, children }) => {
   return (
     <header className="header">
       <div className="logo" onClick={() => window.scrollTo(0, 0)}>
-        <span className="logo-mark">⬢</span> Bodh<span className="logo-label">API</span>
+        <BodhLogo /> Bodh<span className="logo-label">API</span>
       </div>
       <div className="header-right">
         <button className="theme-toggle" onClick={toggleTheme} title="Toggle Theme">
