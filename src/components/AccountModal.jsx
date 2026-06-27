@@ -3,18 +3,7 @@ import { authFetch } from "../utils/authFetch";
 import { showToast } from "../utils/toast";
 import { url, ROUTES } from "../utils/api";
 
-const CopyIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-  </svg>
-);
 
-const CheckIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
 
 const getPrefix = (key) => {
   if (!key) return "";
@@ -32,7 +21,7 @@ const AccountModal = ({
   onReloginRequired,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
+
   const [closing, setClosing] = useState(false);
 
   // Generation state
@@ -44,14 +33,7 @@ const AccountModal = ({
     setTimeout(onClose, 200);
   };
 
-  const handleCopy = async () => {
-    if (!latestKey?.key) return;
-    try {
-      await navigator.clipboard.writeText(latestKey.key);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {}
-  };
+
 
   const startGenerate = () => {
     setShowNamePrompt(true);
@@ -162,13 +144,7 @@ const AccountModal = ({
                 <span className="key-name-label">{latestKey.name || "API Key"}</span>
                 <span className="key-text">{getPrefix(latestKey.key)}</span>
               </div>
-              <button
-                className={`key-copy-btn ${copied ? "copied" : ""}`}
-                onClick={handleCopy}
-                title="Copy prefix"
-              >
-                {copied ? <CheckIcon /> : <CopyIcon />}
-              </button>
+
             </div>
 
             <div className="key-actions">
