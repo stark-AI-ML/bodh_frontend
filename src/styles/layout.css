@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════ */
 
 .app {
-  display: block;
+  display: flex;
   min-height: 100vh;
   background: var(--bg);
 }
@@ -161,20 +161,12 @@
 /* ── Main Content Area ─────── */
 .main {
   margin-left: var(--sidebar-w);
-<<<<<<< HEAD
-  margin-right: var(--console-w);
-  margin-top: var(--header-h);
-  padding: 48px 56px 120px;
-  max-width: calc(100% - var(--sidebar-w) - var(--console-w));
-  transition: margin 0.25s, max-width 0.25s;
-=======
   margin-right: calc(var(--console-w) + 40px);
   margin-top: var(--header-h);
   flex: 1;
   padding: 60px 80px 120px;
   max-width: calc(var(--content-max) + 160px);
   transition: margin 0.25s;
->>>>>>> uiChange
 }
 
 .main .hero-subtitle {
@@ -213,27 +205,17 @@
 
 /* ── Responsive ────────────── */
 @media (max-width: 1200px) {
-<<<<<<< HEAD
-  .main { 
-    margin-right: 0; 
-    max-width: calc(100% - var(--sidebar-w)); 
-=======
   .app { flex-direction: column; }
   .main { 
     margin-right: 0; 
     padding: 40px 40px 100px; 
     max-width: 100%;
->>>>>>> uiChange
   }
 }
 
 @media (max-width: 1024px) {
   .sidebar { transform: translateX(-100%); }
-  .main { 
-    margin-left: 0; 
-    padding: 32px 20px 100px; 
-    max-width: 100%; 
-  }
+  .main { margin-left: 0; padding: 32px 20px 100px; }
 }
 
 @media (max-width: 640px) {
