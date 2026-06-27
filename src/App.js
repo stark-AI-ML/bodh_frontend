@@ -276,10 +276,7 @@ const App = () => {
       <Sidebar />
       <MainContent />
 
-<<<<<<< HEAD
       {/* Persistent API Console */}
-=======
->>>>>>> uiChange
       <ConsolePanel
         isLoggedIn={isLoggedIn}
         apiKey={latestKey?.key}
