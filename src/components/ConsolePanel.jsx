@@ -120,7 +120,8 @@ const ConsolePanel = ({ isLoggedIn, apiKey, onLoginRequired, baseUrl }) => {
       <div className="console-body">
         {(!isLoggedIn || !apiKey) && (
           <div className="console-alert">
-            Please <a href="#" onClick={(e) => { e.preventDefault(); onLoginRequired(); }}>login</a> and generate an API key, or paste an existing one below for a quick demo.
+            {/* error may happen */}
+            Please <a href="docs.bodhapi.online" onClick={(e) => { e.preventDefault(); onLoginRequired(); }}>login</a> and generate an API key, or paste an existing one below for a quick demo.
           </div>
         )}
 
