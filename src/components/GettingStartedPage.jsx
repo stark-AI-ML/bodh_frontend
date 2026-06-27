@@ -83,20 +83,20 @@ const GettingStartedPage = ({ newlyGeneratedKey, allKeys = [], onClose, baseUrl,
   // Use full key in code examples only if freshly generated, otherwise placeholder
   const examples = getCodeExamples(newlyGeneratedKey);
 
-  const handleDeleteKey = async (keyPrefix) => {
+  const handleDeleteKey = async (k) => {
     if (!window.confirm("Are you sure you want to delete this API key? This action cannot be undone.")) return;
     
-    setIsDeleting(keyPrefix);
+    setIsDeleting(k.key);
     try {
       const { res } = await authFetch(url(ROUTES.REMOVE_KEY), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key: keyPrefix })
+        body: JSON.stringify({ prefixKey: k.name, key: k.key })
       });
       
       if (res && res.ok) {
         showToast("API key deleted successfully.", "success");
-        onKeyDeleted(keyPrefix);
+        onKeyDeleted(k.key);
       } else {
         const data = await res.json().catch(() => ({}));
         showToast(data.message || data.error || "Failed to delete API key.", "error");
@@ -253,7 +253,7 @@ const GettingStartedPage = ({ newlyGeneratedKey, allKeys = [], onClose, baseUrl,
                       <td className="col-actions" style={{ textAlign: 'center' }}>
                         <button
                           className="btn-icon delete-key-btn"
-                          onClick={() => handleDeleteKey(k.key)}
+                          onClick={() => handleDeleteKey(k)}
                           disabled={isDeleting === k.key}
                           title="Delete Key"
                         >

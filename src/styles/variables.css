@@ -1,128 +1,128 @@
 /* ═══════════════════════════════════════════
-   Design Tokens — BodhAPI Docs
+   Design Tokens — Croma Aesthetic Overhaul
    ═══════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* ── Surface Colors ─────────── */
-  --bg:           #09090b;
-  --surface:      #111113;
-  --surface-2:    #18181b;
-  --surface-3:    #1f1f23;
-  --surface-inset:#0a0a0c;
+  /* ── Surface Colors (Dark) ──── */
+  --bg:           #000000;
+  --surface:      #0f0f10;
+  --surface-2:    #19191d;
+  --surface-3:    #292929;
+  --surface-inset:#1e1e1e;
 
   /* ── Border ─────────────────── */
   --border:       rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.13);
-  --border-strong:#3f3f46;
+  --border-hover: rgba(255, 255, 255, 0.15);
+  --border-strong:#2a2a32;
 
   /* ── Text ───────────────────── */
-  --text:   #fafafa;
-  --text-2: #a1a1aa;
-  --text-3: #71717a;
-  --text-4: #52525b;
+  --text:   #ffffff;
+  --text-2: rgba(255, 255, 255, 0.85);
+  --text-3: rgba(255, 255, 255, 0.45);
+  --text-4: rgba(255, 255, 255, 0.3);
 
-  /* ── Accent ─────────────────── */
-  --accent:       #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-muted: rgba(99, 102, 241, 0.10);
-  --accent-glow:  rgba(99, 102, 241, 0.18);
+  /* ── Accent (Purple) ────────── */
+  --accent:       #7c6af7;
+  --accent-hover: #6251e0;
+  --accent-muted: rgba(124, 106, 247, 0.12);
+  --accent-glow:  rgba(124, 106, 247, 0.25);
 
   /* ── Semantic ───────────────── */
-  --success:      #22c55e;
-  --success-muted:rgba(34, 197, 94, 0.12);
-  --warning:      #eab308;
-  --error:        #ef4444;
-  --error-muted:  rgba(239, 68, 68, 0.10);
-  --purple:       #a78bfa;
-  --purple-muted: rgba(167, 139, 250, 0.12);
+  --success:      #86efac;
+  --success-muted:rgba(134, 239, 172, 0.12);
+  --warning:      #fbbf24;
+  --error:        #ff5555;
+  --error-muted:  rgba(255, 85, 85, 0.10);
+  --purple:       #c084fc;
+  --purple-muted: rgba(192, 132, 252, 0.12);
 
   /* ── Method Colors ──────────── */
-  --get:    #22c55e;
-  --post:   #3b82f6;
-  --put:    #eab308;
-  --delete: #ef4444;
+  --get:    #4dabf7;
+  --post:   #86efac;
+  --put:    #fbbf24;
+  --delete: #ff5555;
 
   /* ── Radius ─────────────────── */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius:    8px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl:20px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius:    12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-2xl:48px;
   --radius-full:9999px;
 
   /* ── Shadows ────────────────── */
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.15);
-  --shadow:    0 4px 16px rgba(0,0,0,0.2);
-  --shadow-md: 0 8px 30px rgba(0,0,0,0.25);
-  --shadow-lg: 0 20px 50px rgba(0,0,0,0.35);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow:    0 8px 30px rgba(0,0,0,0.5);
+  --shadow-md: 0 16px 40px rgba(0,0,0,0.6);
+  --shadow-lg: 0 40px 120px rgba(0,0,0,0.9);
 
   /* ── Typography ─────────────── */
-  --font:      'Inter', system-ui, -apple-system, sans-serif;
-  --font-display:'Outfit', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font:      'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display:'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', Menlo, monospace;
 
-  --text-xs:  0.75rem;
+  --text-xs:  0.7rem;
   --text-sm:  0.8125rem;
-  --text-base:0.875rem;
-  --text-md:  0.9375rem;
-  --text-lg:  1rem;
-  --text-xl:  1.125rem;
+  --text-base:0.9rem;
+  --text-md:  1rem;
+  --text-lg:  1.125rem;
+  --text-xl:  1.25rem;
   --text-2xl: 1.5rem;
-  --text-3xl: 2rem;
-  --text-4xl: 2.5rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: clamp(32px, 5vw, 56px);
 
   /* ── Layout ─────────────────── */
-  --header-h:  56px;
-  --sidebar-w: 250px;
-  --content-max: 820px;
-  --console-w: 420px;
+  --header-h:  70px;
+  --sidebar-w: 260px;
+  --content-max: 860px;
+  --console-w: 440px;
 
   /* ── JSON Syntax ────────────── */
-  --json-key:   #f472b6;
-  --json-string:#34d399;
+  --json-key:   #f87171;
+  --json-string:#86efac;
   --json-number:#fbbf24;
-  --json-bool:  #a78bfa;
-  --json-null:  #a78bfa;
-  --json-punct: #52525b;
+  --json-bool:  #c084fc;
+  --json-null:  #c084fc;
+  --json-punct: #666666;
 }
 
 /* ── Light Theme Override ───── */
 [data-theme="light"] {
-  --bg:           #ffffff;
-  --surface:      #fafafa;
+  --bg:           #fafafa;
+  --surface:      #ffffff;
   --surface-2:    #f4f4f5;
   --surface-3:    #e4e4e7;
-  --surface-inset:#f0f0f2;
+  --surface-inset:#ffffff;
 
-  --border:       rgba(0, 0, 0, 0.06);
-  --border-hover: rgba(0, 0, 0, 0.12);
+  --border:       rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.16);
   --border-strong:#d4d4d8;
 
-  --text:   #09090b;
-  --text-2: #3f3f46;
-  --text-3: #71717a;
-  --text-4: #a1a1aa;
+  --text:   #111111;
+  --text-2: rgba(0, 0, 0, 0.8);
+  --text-3: rgba(0, 0, 0, 0.5);
+  --text-4: rgba(0, 0, 0, 0.35);
 
-  --accent:       #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-muted: rgba(79, 70, 229, 0.07);
-  --accent-glow:  rgba(79, 70, 229, 0.10);
+  --accent:       #7c6af7;
+  --accent-hover: #6251e0;
+  --accent-muted: rgba(124, 106, 247, 0.08);
+  --accent-glow:  rgba(124, 106, 247, 0.15);
 
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
-  --shadow:    0 4px 16px rgba(0,0,0,0.06);
-  --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
-  --shadow-lg: 0 20px 50px rgba(0,0,0,0.12);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+  --shadow:    0 8px 30px rgba(0,0,0,0.08);
+  --shadow-md: 0 16px 40px rgba(0,0,0,0.1);
+  --shadow-lg: 0 40px 120px rgba(0,0,0,0.15);
 
-  --json-key:   #d946ef;
+  --json-key:   #ef4444;
   --json-string:#059669;
   --json-number:#d97706;
-  --json-bool:  #7c3aed;
-  --json-null:  #7c3aed;
+  --json-bool:  #9333ea;
+  --json-null:  #9333ea;
   --json-punct: #a1a1aa;
 }

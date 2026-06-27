@@ -1,15 +1,11 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--font-mono);
 }
 
 /* Toast Messages */
@@ -28,14 +24,14 @@ code {
   align-items: center;
   gap: 10px;
   padding: 12px 20px;
-  border-radius: 8px;
-  background: #1e1e2e;
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  font-size: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
   font-weight: 500;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  border-left: 4px solid #6366f1;
+  border-left: 4px solid var(--accent);
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -52,11 +48,11 @@ code {
 }
 
 .bodh-toast-error {
-  border-left-color: #ef4444;
+  border-left-color: var(--error);
 }
 
 .bodh-toast-success {
-  border-left-color: #10b981;
+  border-left-color: var(--success);
 }
 
 .toast-icon {

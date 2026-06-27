@@ -24,8 +24,8 @@ const highlightJSON = (obj) => {
   let json = JSON.stringify(obj, null, 2);
   json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   
-  json = json.replace(/("(?:[^"\\]|\\.)*")/g, function (match) {
-    if (/^\s*"/.test(match) && /":\s*/.test(json.substring(json.indexOf(match) + match.length))) {
+  json = json.replace(/("(?:[^"\\]|\\.)*")/g, function (match, p1, offset) {
+    if (/^\s*"/.test(match) && /^\s*:/.test(json.substring(offset + match.length, offset + match.length + 10))) {
       return '<span class="json-key">' + match + '</span>';
     }
     return '<span class="json-string">' + match + '</span>';
@@ -78,7 +78,6 @@ const ConsolePanel = ({ isLoggedIn, apiKey, onLoginRequired, baseUrl }) => {
       if (v.trim()) queryParams.append(k, v.trim());
     });
 
-    // Handle baseUrl safely
     const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
     const url = `${cleanBaseUrl}/api/${endpoint}${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
 
@@ -91,8 +90,19 @@ const ConsolePanel = ({ isLoggedIn, apiKey, onLoginRequired, baseUrl }) => {
         }
       });
       
-      const data = await res.json();
-      const fullResponse = { request: url, status: res.status, ...data };
+      const contentType = res.headers.get("content-type");
+      let data;
+      if (contentType && contentType.includes("application/json")) {
+        try {
+          data = await res.json();
+        } catch (e) {
+          data = await res.text();
+        }
+      } else {
+        data = await res.text();
+      }
+
+      const fullResponse = { request: url, status: res.status, data };
       setResponseHtml(highlightJSON(fullResponse));
     } catch (err) {
       const errorResponse = { request: url, error: err.message || "Failed to fetch" };
@@ -105,12 +115,21 @@ const ConsolePanel = ({ isLoggedIn, apiKey, onLoginRequired, baseUrl }) => {
   return (
     <div className="console-panel">
       <div className="console-header">
+<<<<<<< HEAD
         <strong>🧪 API Console</strong>
+=======
+        <strong>API Console</strong>
+>>>>>>> uiChange
       </div>
       <div className="console-body">
         {(!isLoggedIn || !apiKey) && (
           <div className="console-alert">
+<<<<<<< HEAD
             Please <a href="#" onClick={(e) => { e.preventDefault(); onLoginRequired(); }}>login</a> and generate an API key, or paste an existing one below for a quick demo.
+=======
+            {/* error may happen */}
+            Please <a href="docs.bodhapi.online" onClick={(e) => { e.preventDefault(); onLoginRequired(); }}>login</a> and generate an API key, or paste an existing one below for a quick demo.
+>>>>>>> uiChange
           </div>
         )}
 
@@ -148,7 +167,7 @@ const ConsolePanel = ({ isLoggedIn, apiKey, onLoginRequired, baseUrl }) => {
         ))}
 
         <button className="console-send-btn" onClick={handleSend} disabled={loading}>
-          {loading ? "Sending..." : "🚀 Send Request"}
+          {loading ? "Sending..." : "Send Request"}
         </button>
 
         <div 

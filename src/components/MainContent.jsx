@@ -127,7 +127,7 @@ const EndpointCard = ({ id, method, path, description, params, example }) => {
 const MainContent = () => {
   return (
     <main className="main" id="mainContent">
-      <h1>📡 BodhAPI Documentation</h1>
+      <h1>BodhAPI Documentation</h1>
       <p>High-performance REST API for Indian news intelligence. Base URL: <code>https://bodhapi.online/api</code></p>
 
       <AuthExampleCard />

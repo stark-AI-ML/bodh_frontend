@@ -10,13 +10,13 @@ export const ROUTES = {
   // Auth
   AUTH_ME: '/auth/me',
   AUTH_GOOGLE: '/auth/google',
-  AUTH_LOGOUT: '/auth/logout',
+  AUTH_LOGOUT: '/logout',
   AUTH_GENERATE_KEY: '/auth/generate-key',
   REFRESH: '/refresh',
 
   // API Keys
-  GET_CURRENT_KEYS: '/api/getCurrentKeys',
-  REMOVE_KEY: '/api/removeKey',
+  GET_CURRENT_KEYS: '/api/session/getCurrentKeys',
+  REMOVE_KEY: '/api/session/removeKey',
 };
 
 // Helper: returns full URL for a route
