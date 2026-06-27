@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   
-  "homepage": "https://stark-AI-ML.github.io/bodh_frontend", 
+  "homepage": "https://docs.bodhapi.online", 
 
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
